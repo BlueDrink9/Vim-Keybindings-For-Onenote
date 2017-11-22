@@ -1,4 +1,4 @@
-version: 0.1.{build}
+version: 0.5.{build}
 
 branches:
   only:
@@ -13,6 +13,10 @@ environment:
     secure: Ai43hWJZMaTrKY0n/9bALQtFCURXqb8aCE3ZMPzjpoU=
   git_user:
     secure: 6y/91jUe4skCVkd8DQpFkA==
+  onenoteUser:
+    secure: PdIwrjncAGjHRbc1LcXwjLFWeYA04T9K+nYIpTW9AFs=
+  onenotePass:
+    secure: b6yIKUeWCVYQtWDkHfOa5aTphidnbBbx42gYk3RM8i8OisezTSRFiniXohCBHk5w
 
 artifacts:
   - path: vim_onenote.exe
@@ -21,15 +25,26 @@ artifacts:
 init:
   # Initialise remote desktop stuff
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
-  - cmd: echo %git_user% "$env:git_user" $env:git_user
-install: 
-  - cinst autohotkey.install
-#  - cinst onenote
 
-# Build.bat will include logic for running test program.
-# Will faiL if test fails.
+  # Set env variables
+  - cmd: setx onenoteUser %onenoteUser%
+  - cmd: setx onenotePass %onenotePass%
+ 
+
+install: 
+  # Chocolaty install autohotkey and onenote
+  - cinst autohotkey.install
+  - cinst onenote --ignore-checksums
+  - cinst vim
+  - cmd: refreshenv
+
+
+# Build.bat includes logic for running test program.
+# Will fail if test fails.
+# Appveyor setup prepares onenote for use without registration
+
 build_script:
-  - cmd: build.bat
+  - cmd: start /w "C:\\Program Files\\AutoHotkey\\Autohotkey.exe" "C:\\Projects\\vim-keybindings-for-onenote\\appveyor_setup.ahk" && build.bat /t
 
 after_test:
   - git status
@@ -55,9 +70,10 @@ deploy:
   prerelease: true
   on:
     appveyor_repo_tag: true        # deploy on tag push only
+    #branch: master                 # release from master branch only
 
 # Allow remote desktop access
 on_finish:
-  #- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  # - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 test: off

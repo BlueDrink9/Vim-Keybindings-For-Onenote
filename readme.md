@@ -1,8 +1,10 @@
-[![Stories in Ready](https://badge.waffle.io/idvorkin/Vim-Keybindings-For-Onenote.png?label=ready&title=Ready)](https://waffle.io/idvorkin/Vim-Keybindings-For-Onenote?utm_source=badge)
 VIM keybindings for OneNote
 ====
 
+[![Appveyor master branch status](https://ci.appveyor.com/api/projects/status/github/idvorkin/Vim-Keybindings-For-Onenote?branch=master&svg=true)](https://ci.appveyor.com/project/BlueDrink9/vim-keybindings-for-onenote)
+[![Stories in Ready](https://badge.waffle.io/idvorkin/Vim-Keybindings-For-Onenote.png?label=ready&title=Ready)](https://waffle.io/idvorkin/Vim-Keybindings-For-Onenote?utm_source=badge)
 [![Join the chat at https://gitter.im/idvorkin/Vim-Keybindings-For-Onenote](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/idvorkin/Vim-Keybindings-For-Onenote?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 VIM keybindings for OneNote brings the efficiency of VIM to the organizing power of Onenote. 
 
 This project uses [AutoHotKey](http://www.autohotkey.com/). If you don't have autohotkey installed you can still run prebuilt executables. 
@@ -12,9 +14,12 @@ You can run the VIM keybinding via autohotkey, or by downloading and running the
 Run Vim keybindings via prebuilt executable
 -----
 
-Download [vim\_onenote.exe](https://github.com/idvorkin/Vim-Keybindings-For-Onenote/raw/master/vim_onenote.exe)
+* Download [vim\_onenote.exe](https://github.com/idvorkin/Vim-Keybindings-For-Onenote/raw/master/vim_onenote.exe)
 
+* Run [the buildscript](https://github.com/idvorkin/Vim-Keybindings-For-Onenote/blob/master/build.bat) to compile to exe from source .ahk
 
+The buildscript can run the tests beforehand when passed /t as an argument.
+This runs the tests with the -quiet flag, so no messageboxes interrupt execution.
 
 Run Vim keybindings via AutoHotKey script
 ----

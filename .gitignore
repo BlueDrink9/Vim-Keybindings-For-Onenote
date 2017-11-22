@@ -2,5 +2,6 @@
 *.sw?
 *.bak
 *.*~
-TestingLogs/
-vim_onenote.exe
+testLogs/*
+*.exe
+

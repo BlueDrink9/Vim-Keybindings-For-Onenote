@@ -17,23 +17,38 @@ SetKeyDelay, 50 ; Only affects sendevent, used for sending the test
 ; Contains clipboard related functions, among others.
 #include %A_ScriptDir%\vim_onenote_library.ahk
 
+; 1 optional commandline argument, -quiet, stops ouput at the end of the tests.
+; Used for CI testing.
+arg1 = %1%
+if (arg1 == "-quiet"){
+    QuietMode := True
+}else{
+    QuietMode := False
+}
 
 TestsFailed := False
-LogFileName = %A_Now%.txt ;%A_Scriptdir%\testlogs\%A_Now%.txt
+IfNotExist, testLogs
+    FileCreateDir, testLogs
+LogFileName = testLogs\%A_Now%.txt ;%A_Scriptdir%\testlogs\%A_Now%.txt
 
+ToolTip, 32, 0, 0
 ; Initialise the programs
 SetWorkingDir %A_ScriptDir%\TestingLogs  ; Temp vim files are put out of the way.
-run, cmd.exe /r vim,,,VimPID
-winwait,  - VIM ; Wait for vim to start
+ToolTip, 35, 0, 0
+run, cmd.exe /r gvim,,,VimPID
+ToolTip, 37, 0, 0
+winwait,- GVIM ; Wait for vim to start
+ToolTip, 39, 0, 0
 SetWorkingDir %A_ScriptDir%  
 send :imap jj <esc>{return} ; Prepare vim    
 ;TODO: Check if onenote already open. Or just ignore? multiple windows may cause problems.
 ;       May be fixed by making the switch specific to the test page.
 Run, OneNote,,,OneNotePID
-winwait, - Microsoft OneNote ; Wait for onenote to start
+winwait,OneNote ; Wait for onenote to start
 sleep, 200
 WinActivate,OneNote
 WinWaitActive,OneNote
+sleep, 300
 send ^nVim Onenote Test{return} ; Create a new page in onenote, name it, move to text section
 WinMaximize,OneNote
 
@@ -91,15 +106,15 @@ RunTests(){
     Global ArrayOfTests
     for index, test in ArrayOfTests
     {
-        msgbox Current test: "%test%"
+        ; msgbox Current test: "%test%"
         TestAndCompareOutput(test)
     }
     EndTesting()
 }
 
 SwitchToVim(){
-    WinActivate,  - VIM
-    WinWaitActive,  - VIM
+    WinActivate,  - GVIM
+    WinWaitActive,  - GVIM
 }
 
 SwitchToOnenote(){
@@ -198,6 +213,7 @@ CompareStrings(OnenoteOutput, VIMOutput, CurrentTest){
 EndTesting(){
     Global TestsFailed
     Global LogFileName
+    Global QuietMode
     ; Delete the new page in onenote
     SwitchToOnenote()
     send ^+A
@@ -208,14 +224,18 @@ EndTesting(){
    
     if (TestsFailed == True)
     {
-        msgbox,4,,At least one test has failed!`nResults are in %LogFileName%`nOpen log? 
-        IfMsgBox Yes
-        {
-            run %LogFileName%
+        if not QuietMode {
+            msgbox,4,,At least one test has failed!`nResults are in %LogFileName%`nOpen log? 
+            IfMsgBox Yes
+            {
+                run %LogFileName%
+            }
         }
         EndScript(1)
     }else{
-        msgbox, All tests pass!
+        if not QuietMode {
+            msgbox, All tests pass!
+        }
         EndScript(0)
     }
 }
